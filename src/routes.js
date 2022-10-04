@@ -80,8 +80,8 @@ export default function Router() {
 
 function ProtectedRoute({ component: Component, isLoggedIn, ...restOfProps }) {
   console.log({ isLoggedIn });
-  // if (isLoggedIn) {
+  if (isLoggedIn) {
     return <Component {...restOfProps} />;
-  // }
-  // return <Navigate to="/login" replace />;
+  }
+  return <Navigate to="/login" replace />;
 }
