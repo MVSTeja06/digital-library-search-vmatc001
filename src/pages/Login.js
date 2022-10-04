@@ -9,7 +9,6 @@ import Page from '../components/Page';
 import Logo from '../components/Logo';
 // sections
 import { LoginForm } from '../sections/auth/login';
-import AuthSocial from '../sections/auth/AuthSocial';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +27,7 @@ const HeaderStyle = styled('header')(({ theme }) => ({
   alignItems: 'center',
   position: 'absolute',
   padding: theme.spacing(3),
-  justifyContent: 'space-between',
+  justifyContent: 'end',
   [theme.breakpoints.up('md')]: {
     alignItems: 'flex-start',
     padding: theme.spacing(7, 5, 0, 7),
@@ -65,7 +64,7 @@ export default function Login() {
     <Page title="Login">
       <RootStyle>
         <HeaderStyle>
-          <Logo />
+          {/* <Logo /> */}
 
           {smUp && (
             <Typography variant="body2" sx={{ mt: { md: -2 } }}>
@@ -82,33 +81,35 @@ export default function Login() {
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
               Hi, Welcome Back
             </Typography>
-            <img src="/static/illustrations/illustration_login.png" alt="login" />
+            <img src="/static/illustrations/welcome-back.png" alt="login" />
           </SectionStyle>
         )}
 
         <Container maxWidth="sm">
-          <ContentStyle>
-            <Typography variant="h4" gutterBottom>
-              Sign in to Minimal
-            </Typography>
-
-            <Typography sx={{ color: 'text.secondary', mb: 5 }}>Enter your details below.</Typography>
-
-            <AuthSocial />
-
-            <LoginForm />
-
-            {!smUp && (
-              <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                Don’t have an account?{' '}
-                <Link variant="subtitle2" component={RouterLink} to="/register">
-                  Get started
-                </Link>
-              </Typography>
-            )}
-          </ContentStyle>
+          <SignInSection smUp={smUp} />
         </Container>
       </RootStyle>
     </Page>
   );
 }
+
+const SignInSection = ({ smUp }) => (
+  <ContentStyle>
+    <Typography variant="h4" gutterBottom>
+      Sign in to Digital Wiki library
+    </Typography>
+
+    <Typography sx={{ color: 'text.secondary', mb: 5 }}>Enter your details below.</Typography>
+
+    <LoginForm />
+
+    {!smUp && (
+      <Typography variant="body2" align="center" sx={{ mt: 3 }}>
+        Don’t have an account?{' '}
+        <Link variant="subtitle2" component={RouterLink} to="/register">
+          Get started
+        </Link>
+      </Typography>
+    )}
+  </ContentStyle>
+);

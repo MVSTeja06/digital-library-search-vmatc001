@@ -2,16 +2,30 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // form
-import { useForm } from 'react-hook-form';
+import { Controller, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import PhoneInput from 'react-phone-input-2';
+
+import 'yup-phone';
+import 'react-phone-input-2/lib/material.css';
+
+import { addDoc, collection, getFirestore, updateDoc } from 'firebase/firestore';
+import fireBaseInit from '../../../utils/firebase-init';
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
+
+const db = getFirestore(fireBaseInit);
+const auth = getAuth(fireBaseInit);
+
+// ----------------------------------------------------------------------
+
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -21,6 +35,7 @@ export default function RegisterForm() {
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
     lastName: Yup.string().required('Last name required'),
+    phone: Yup.string().phone().required('Phone number is required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
     password: Yup.string().required('Password is required'),
   });
@@ -30,6 +45,7 @@ export default function RegisterForm() {
     lastName: '',
     email: '',
     password: '',
+    phone: ''
   };
 
   const methods = useForm({
@@ -42,8 +58,28 @@ export default function RegisterForm() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async () => {
-    navigate('/dashboard', { replace: true });
+  const onSubmit = async (data) => {
+    console.log({ data });
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then(async (userCredential) => {
+        // console.log({ user: userCredential.user });
+
+        const usersTable = collection(db, 'users');
+        const snapshot = await addDoc(usersTable, {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          phone: data.phone,
+          email: data.email
+        })
+        console.log(snapshot.docs[0].data())
+
+        console.log('database')
+
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
   };
 
   return (
@@ -53,7 +89,8 @@ export default function RegisterForm() {
           <RHFTextField name="firstName" label="First name" />
           <RHFTextField name="lastName" label="Last name" />
         </Stack>
-
+        {/* <RHFTextField name="phone" type="tel" label="Phone number" /> */}
+        <PhoneInputField name="phone" type="tel" label="Phone number" />
         <RHFTextField name="email" label="Email address" />
 
         <RHFTextField
@@ -76,5 +113,37 @@ export default function RegisterForm() {
         </LoadingButton>
       </Stack>
     </FormProvider>
+  );
+}
+
+export function PhoneInputField({ name, ...other }) {
+  const { control } = useFormContext();
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error, isTouched } }) => (
+        <>
+          <PhoneInput
+            onlyCountries={['us']}
+            country="us"
+            disableCountryCode
+            disableDropdown
+            prefix="+"
+            value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
+            {...field}
+            searchStyle={{
+              borderColor: isTouched && error && 'red',
+              backgroundColor: 'transparent',
+            }}
+            inputStyle={{
+              borderColor: isTouched && error && 'red',
+              backgroundColor: 'transparent',
+            }}
+          />
+        </>
+      )}
+    />
   );
 }

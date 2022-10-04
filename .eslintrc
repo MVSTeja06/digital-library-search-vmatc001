@@ -8,6 +8,8 @@
     "airbnb",
     "plugin:jsx-a11y/recommended",
     "plugin:react-hooks/recommended",
+    "plugin:react/recommended",
+    "react-app",
     "prettier"
   ],
   "plugins": [
@@ -21,7 +23,8 @@
     "requireConfigFile": false,
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true,
-      "impliedStrict": true
+      "impliedStrict": true,
+      "jsx": true
     }
   },
   "rules": {

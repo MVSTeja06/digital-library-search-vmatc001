@@ -1,17 +1,32 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+
 // @mui
 import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+} from 'firebase/auth';
+
+import { collection, getDoc, getDocs, getFirestore, query, where } from 'firebase/firestore';
+
 // components
+import fireBaseInit from '../../../utils/firebase-init';
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
+
+const auth = getAuth(fireBaseInit);
+const db = getFirestore(fireBaseInit);
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -27,6 +42,7 @@ export default function LoginForm() {
     email: '',
     password: '',
     remember: true,
+    otp: '',
   };
 
   const methods = useForm({
@@ -37,11 +53,79 @@ export default function LoginForm() {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    setError,
+    getValues,
+    clearErrors,
   } = methods;
 
-  const onSubmit = async () => {
-    navigate('/dashboard', { replace: true });
+  const [loginSuccess, setLoginSuccess] = useState(false);
+
+  const onSubmit = async (data) => {
+    // console.log(data);
+    if (!loginSuccess) {
+      signInWithEmailAndPassword(auth, data.email, data.password)
+        .then(async (userCredential) => {
+          
+          // Signed in
+          const usersTable = collection(db, 'users');
+          // const snapshot = await getDocs(usersTable);
+          const snapshot = await query(usersTable, where('email', '==', userCredential.user.email));
+          const result = await getDocs(snapshot);
+
+          console.log(result.docs[0].data());
+          
+          localStorage.setItem('userEmail', userCredential.user.email);
+          localStorage.setItem('userPhone', result.docs[0].data().phone);
+        
+          handleSendOtp(result.docs[0].data().phone);
+        })
+        .catch((error) => {
+          console.log({ error: error.message });
+          setLoginSuccess(false);
+        });
+    } else if (!getValues('otp')) {
+      setError('otp', { type: 'custom', message: 'OTP is required' });
+    } else {
+      clearErrors('otp');
+      console.log('Login>>>>');
+
+      window.confirmationResult.confirm(getValues('otp')).then((result) => {
+        console.log('OTP success>>>>');
+
+        navigate('/dashboard/search', { replace: true });
+      });
+    }
   };
+
+  const handleSendOtp = (userPhone) => {
+    if (!userPhone) {
+      alert('Enter the number please');
+    } else {
+      const appVerifier = window.recaptchaVerifier;
+      const phoneValue = `+1${userPhone}`;
+      signInWithPhoneNumber(auth, phoneValue, appVerifier)
+        .then((confirmationResult) => {
+          window.confirmationResult = confirmationResult;
+          console.log({ confirmationResult });
+          setLoginSuccess(true);
+
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+  useEffect(() => {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      'sign-in-button',
+      {
+        size: 'invisible',
+        callback: (response) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+          console.log('response>>>', response);
+        },
+      },
+      auth
+    );
+  }, []);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -51,6 +135,7 @@ export default function LoginForm() {
         <RHFTextField
           name="password"
           label="Password"
+          id="sign-in-button"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -62,17 +147,19 @@ export default function LoginForm() {
             ),
           }}
         />
+
+        {loginSuccess && <RHFTextField name="otp" label="Enter OTP" />}
       </Stack>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <RHFCheckbox name="remember" label="Remember me" />
-        <Link variant="subtitle2" underline="hover">
+        {/* <RHFCheckbox name="remember" label="Remember me" /> */}
+        <Link variant="subtitle2" component={RouterLink} to="/forgotpassword">
           Forgot password?
         </Link>
       </Stack>
 
       <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
-        Login
+        {loginSuccess ? 'Login with OTP' : 'Login'}
       </LoadingButton>
     </FormProvider>
   );

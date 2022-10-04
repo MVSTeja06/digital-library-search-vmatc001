@@ -13,13 +13,13 @@ import AuthSocial from '../sections/auth/AuthSocial';
 
 // ----------------------------------------------------------------------
 
-const RootStyle = styled('div')(({ theme }) => ({
+export const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
   },
 }));
 
-const HeaderStyle = styled('header')(({ theme }) => ({
+export const HeaderStyle = styled('header')(({ theme }) => ({
   top: 0,
   zIndex: 9,
   lineHeight: 0,
@@ -28,14 +28,14 @@ const HeaderStyle = styled('header')(({ theme }) => ({
   alignItems: 'center',
   position: 'absolute',
   padding: theme.spacing(3),
-  justifyContent: 'space-between',
+  justifyContent: 'end',
   [theme.breakpoints.up('md')]: {
     alignItems: 'flex-start',
     padding: theme.spacing(7, 5, 0, 7),
   },
 }));
 
-const SectionStyle = styled(Card)(({ theme }) => ({
+export const SectionStyle = styled(Card)(({ theme }) => ({
   width: '100%',
   maxWidth: 464,
   display: 'flex',
@@ -44,7 +44,7 @@ const SectionStyle = styled(Card)(({ theme }) => ({
   margin: theme.spacing(2, 0, 2, 2),
 }));
 
-const ContentStyle = styled('div')(({ theme }) => ({
+export const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: 480,
   margin: 'auto',
   minHeight: '100vh',
@@ -65,7 +65,7 @@ export default function Register() {
     <Page title="Register">
       <RootStyle>
         <HeaderStyle>
-          <Logo />
+          {/* <Logo /> */}
           {smUp && (
             <Typography variant="body2" sx={{ mt: { md: -2 } }}>
               Already have an account? {''}
@@ -79,7 +79,7 @@ export default function Register() {
         {mdUp && (
           <SectionStyle>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Manage the job more effectively with Minimal
+              Create your account today !
             </Typography>
             <img alt="register" src="/static/illustrations/illustration_register.png" />
           </SectionStyle>
@@ -87,22 +87,19 @@ export default function Register() {
 
         <Container>
           <ContentStyle>
-            <Typography variant="h4" gutterBottom>
-              Get started absolutely free.
+            <Typography variant="h4" sx={{ mb: 5 }} gutterBottom>
+              Complete Sign-in below
             </Typography>
-
-            <Typography sx={{ color: 'text.secondary', mb: 5 }}>Free forever. No credit card needed.</Typography>
-
-            <AuthSocial />
-
+            {/* <Typography sx={{ color: 'text.secondary', mb: 5 }}>Free forever. No credit card needed.</Typography> */}
+            {/* <AuthSocial /> */}
             <RegisterForm />
 
             <Typography variant="body2" align="center" sx={{ color: 'text.secondary', mt: 3 }}>
-              By registering, I agree to Minimal&nbsp;
+              By registering, I agree to &nbsp;
               <Link underline="always" color="text.primary" href="#">
-                Terms of Service
-              </Link>
-              {''}and{''}
+                Terms of Service&nbsp;
+              </Link>{' '}
+              and &nbsp;
               <Link underline="always" color="text.primary" href="#">
                 Privacy Policy
               </Link>
