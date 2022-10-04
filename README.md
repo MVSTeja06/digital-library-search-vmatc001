@@ -5,3 +5,8 @@
 - Start the project: `npm run start` / `yarn start`
 - open 'http://localhost:3000' in your browser.
 
+Test login credentials :
+
+- username: test@test.com
+- password: test123
+- otp: 123123 (Google firebase test phone number) 
