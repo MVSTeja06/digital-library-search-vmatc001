@@ -96,10 +96,10 @@ export default function Login() {
 const SignInSection = ({ smUp }) => (
   <ContentStyle>
     <Typography variant="h4" gutterBottom>
-      Sign in to Digital Wiki library
+      Sign in to Digital library with Wiki Cards
     </Typography>
 
-    <Typography sx={{ color: 'text.secondary', mb: 5 }}>Enter your details below.</Typography>
+    <Typography sx={{ color: 'text.secondary', mb: 5 }}>Enter your login details below.</Typography>
 
     <LoginForm />
 

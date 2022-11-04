@@ -1,15 +1,13 @@
-import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
-import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+/* eslint-disable prefer-regex-literals */
+import { debounce, filter } from 'lodash';
+import axios from 'axios';
+import { useCallback, useState } from 'react';
+
 // material
 import {
   Card,
   Table,
   Stack,
-  Avatar,
-  Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -17,101 +15,59 @@ import {
   Typography,
   TableContainer,
   TablePagination,
+  Link,
 } from '@mui/material';
 // components
+
+import { Box } from '@mui/system';
+import SearchResultPage from '../components/SearchResultPage';
 import Page from '../components/Page';
-import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
-import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
-// mock
-import USERLIST from '../_mock/user';
+import { UserListToolbar } from '../sections/@dashboard/user';
 
-// ----------------------------------------------------------------------
+const textStyle = {
+  maxWidth: '100%',
+  display: '-webkit-box',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 3,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+};
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
-];
+export const _getText = (text, filterName) => (filterName ? _getTextWithHighlights(text, filterName) : text);
 
-// ----------------------------------------------------------------------
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
+  export const doStringFormatting = (str = '') => {
+  const regex2 = new RegExp("\\[\\'", 'gi');
+  const regex3 = /']/gi;
+  const regex4 = /"]/gi;
+  const regex5 = new RegExp('\\[\\"', 'gi');
+  str = str.replace(regex2, '');
+  str = str.replace(regex3, '');
+  str = str.replace(regex4, '');
+  str = str.replace(regex5, '');
+  return str;
 }
 
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+export const _getTextWithHighlights = (text, searchText) => {
+  const regex1 = new RegExp(searchText, 'gi');
+  let newText = text.replace(regex1, `<mark class="highlight">$&</mark>`);
 
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
+  newText = doStringFormatting(newText)
+  
+  return <span dangerouslySetInnerHTML={{ __html: newText }} />;
+};
 
 export default function Search() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [library, setLibrary] = useState([]);
 
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -122,79 +78,112 @@ export default function Search() {
     setPage(0);
   };
 
-  const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+  const makeSearchAPI = async (searchVal) => {
+    console.log({ searchVal });
+    try {
+      const result = await axios.get(`http://localhost:3001/api/search?search=${searchVal}`);
+      console.log({ result });
+      setLibrary(result?.data);
+    } catch (error) {
+      console.error({ error });
+    }
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const debouncedChangeHandler = useCallback(debounce(makeSearchAPI, 300), []);
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const handleFilterByName = (event) => {
+    setFilterName(event.target.value);
 
-  const isUserNotFound = filteredUsers.length === 0;
+    debouncedChangeHandler(event.target.value);
+  };
 
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - library.length) : 0;
+  const isUserNotFound = library.length === 0;
+
+  const [open, setOpen] = useState(false);
+
+  const [displayETD, setDisplayETD] = useState({});
+
+  const handleClickOpen = (rowItem) => {
+    setOpen(true);
+    if (rowItem) {
+      setDisplayETD(rowItem?._source);
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  console.log({ displayETD });
   return (
     <Page title="User">
-      <Container>
+      <Container sx={{ padding: '0 !important' }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Search Electronic Thesis And Disertation
+            Search for Electronic Thesis And Disertation (ETDs)
           </Typography>
-          {/* <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
-          </Button> */}
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <UserListToolbar filterName={filterName} onFilterName={handleFilterByName} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                  {library.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const {
+                      _id,
+                      _source: { author, title, text, university, year },
+                    } = row;
 
                     return (
-                      <TableRow
-                        hover
-                        key={id}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
-                        </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-                        <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
-                            {sentenceCase(status)}
-                          </Label>
-                        </TableCell>
+                      <TableRow hover key={_id} tabIndex={-1}>
+                        <TableCell colSpan={6}>
+                          <Stack direction="column" alignItems="flex-start" ml={2} spacing={2}>
+                            <Link underline="hover" onClick={() => handleClickOpen(row)} sx={{ cursor: 'pointer' }}>
+                              <Typography variant="h5" noWrap>
+                                {_getText(title, filterName)}
+                              </Typography>
+                            </Link>
+                            <Box display="flex">
+                              <Typography variant="subtitle2" noWrap mr={2}>
+                                Author(s):
+                              </Typography>
+                              <Typography variant="body2" noWrap>
+                                {author}
+                              </Typography>
+                            </Box>
+                            <Box
+                              display="flex"
+                              sx={{
+                                marginTop: '0 !important',
+                              }}
+                            >
+                              <Typography variant="subtitle2" noWrap mr={2}>
+                                University:
+                              </Typography>
+                              <Typography variant="body2" noWrap>
+                                {university}
+                              </Typography>
+                            </Box>
+                            <Box
+                              display="flex"
+                              sx={{
+                                marginTop: '0 !important',
+                              }}
+                            >
+                              <Typography variant="subtitle2" noWrap mr={2}>
+                                Year:
+                              </Typography>
+                              <Typography variant="body2" noWrap>
+                                {year}
+                              </Typography>
+                            </Box>
 
-                        <TableCell align="right">
-                          <UserMoreMenu />
+                            <AbstractSection _getText={_getText} filterName={filterName} text={text} />
+                          </Stack>
                         </TableCell>
                       </TableRow>
                     );
@@ -222,14 +211,35 @@ export default function Search() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={library.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
+
+        <SearchResultPage open={open} handleClose={handleClose} displayETD={displayETD} />
       </Container>
     </Page>
   );
 }
+
+const AbstractSection = ({ _getText, text, filterName }) => {
+  const [fullAbstract, setFullAbstract] = useState(false);
+
+  const showMore = () => {
+    setFullAbstract(!fullAbstract);
+  };
+
+  return (
+    <>
+      <Typography variant="body2" flexWrap sx={fullAbstract ? {} : textStyle}>
+        {_getText(text, filterName)}
+      </Typography>
+      <Link underline="hover" onClick={showMore} sx={{ cursor: 'pointer' }}>
+        {fullAbstract ? 'Show less' : 'Show more'}
+      </Link>
+    </>
+  );
+};

@@ -52,6 +52,7 @@ export default function AccountPopover() {
 
   const handleLogout = async () => {
     try {
+      localStorage.clear()
       await signOut(auth);
       handleClose();
       navigate('/login');

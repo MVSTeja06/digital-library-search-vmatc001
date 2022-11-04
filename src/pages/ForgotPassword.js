@@ -96,7 +96,7 @@ export default function ForgotPassword() {
         {mdUp && (
           <SectionStyle>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Create your account today !
+              Forgot your password ?
             </Typography>
             <Box sx={{
               width: "400px",
@@ -111,7 +111,7 @@ export default function ForgotPassword() {
           <Container sx={{ my: 10 }} maxWidth="sm">
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
               <Typography variant="h4" gutterBottom>
-                Change Password
+                Send password reset link to ?
               </Typography>
             </Stack>
 
@@ -119,11 +119,11 @@ export default function ForgotPassword() {
             <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <RHFTextField name="email" label="Send email to" autoFocus />
+                  <RHFTextField name="email" label="Email address" autoFocus />
                 </Grid>
                 <Grid item xs={12}>
                   <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
-                    Save
+                    Send
                   </LoadingButton>
                 </Grid>
               </Grid>

@@ -71,28 +71,36 @@ export default function LoginForm() {
           // const snapshot = await getDocs(usersTable);
           const snapshot = await query(usersTable, where('email', '==', userCredential.user.email));
           const result = await getDocs(snapshot);
-
-          console.log(result.docs[0].data());
           
           localStorage.setItem('userEmail', userCredential.user.email);
           localStorage.setItem('userPhone', result.docs[0].data().phone);
         
-          handleSendOtp(result.docs[0].data().phone);
+          handleSendOtp(result.docs[0]?.data()?.phone);
         })
         .catch((error) => {
           console.log({ error: error.message });
           setLoginSuccess(false);
+          if(error.message !== "INVALID_PASSWORD"){
+            setError('email', { type: 'custom', message: 'email does not exist' });
+          } else {
+            setError('password', { type: 'custom', message: 'password is invalid' });
+          }
         });
     } else if (!getValues('otp')) {
       setError('otp', { type: 'custom', message: 'OTP is required' });
     } else {
       clearErrors('otp');
-      console.log('Login>>>>');
 
       window.confirmationResult.confirm(getValues('otp')).then((result) => {
-        console.log('OTP success>>>>');
 
         navigate('/dashboard/search', { replace: true });
+
+      }).catch((error)=>{
+
+        console.log({error});
+        if(error.code?.includes("auth/invalid-verification-code")){
+          setError('otp', { type: 'custom', message: 'Invalid OTP provided' });
+        }
       });
     }
   };
@@ -120,13 +128,14 @@ export default function LoginForm() {
         size: 'invisible',
         callback: (response) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
-          console.log('response>>>', response);
+          // console.log('response>>>', response);
         },
       },
       auth
     );
   }, []);
 
+  console.log({ isSubmitting })
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>

@@ -1,3 +1,7 @@
+// date-fns
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/lab';
+
 // routes
 import Router from './routes';
 // theme
@@ -10,10 +14,12 @@ import { BaseOptionChartStyle } from './components/chart/BaseOptionChart';
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <ScrollToTop />
-      <BaseOptionChartStyle />
-      <Router />
-    </ThemeProvider>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <ThemeProvider>
+        <ScrollToTop />
+        <BaseOptionChartStyle />
+        <Router />
+      </ThemeProvider>
+    </LocalizationProvider>
   );
 }

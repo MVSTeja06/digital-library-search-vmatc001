@@ -4,7 +4,20 @@ import { sentenceCase } from 'change-case';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // material
-import { Card, Table, Stack, Avatar, Button, Container, Typography, InputAdornment, styled, Grid } from '@mui/material';
+import {
+  Card,
+  Table,
+  Stack,
+  Avatar,
+  Button,
+  Container,
+  Typography,
+  InputAdornment,
+  styled,
+  Grid,
+  Alert,
+  Snackbar,
+} from '@mui/material';
 // components
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -31,9 +44,14 @@ const ContentStyle = styled('div')(({ theme }) => ({
 const db = getFirestore(fireBaseInit);
 
 export default function Profile() {
-  const navigate = useNavigate();
+  
+  const [openAPIToast, setOpenAPIToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [severity, setSeverity] = useState('success');
 
-  const [showPassword, setShowPassword] = useState(false);
+  const handleAPIToastClose = () => {
+    setOpenAPIToast(false);
+  };
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
@@ -64,20 +82,31 @@ export default function Profile() {
 
     const userEmail = localStorage.getItem('userEmail');
     const usersTable = collection(db, 'users');
+    try {
+      const snapshot = await query(usersTable, where('email', '==', userEmail));
+      const result = await getDocs(snapshot);
 
-    const snapshot = await query(usersTable, where('email', '==', userEmail));
-    const result = await getDocs(snapshot);
+      console.log('result', result.docs[0].ref);
+      await setDoc(result.docs[0].ref, data);
 
-    console.log('result', result.docs[0].ref);
-    await setDoc(result.docs[0].ref, data);
+      console.log('success !');
 
-    console.log('success !');
+      setSeverity('success');
+      setOpenAPIToast(true);
+      setToastMessage('Profile update successfully!');
+    } catch (error) {
+      setSeverity('error');
+      setOpenAPIToast(true);
+      setToastMessage('Failed to update profile!');
+    }
   };
 
   useEffect(() => {
     const userEmail = localStorage.getItem('userEmail');
     const usersTable = collection(db, 'users');
+
     // const snapshot = await getDocs(usersTable);
+
     const update = async () => {
       const snapshot = await query(usersTable, where('email', '==', userEmail));
       const result = await getDocs(snapshot);
@@ -128,6 +157,12 @@ export default function Profile() {
           </Container>
         </Card>
       </Container>
+
+      <Snackbar open={openAPIToast} autoHideDuration={6000} onClose={handleAPIToastClose}>
+        <Alert onClose={handleAPIToastClose} severity="success" sx={{ width: '100%' }}>
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </Page>
   );
 }

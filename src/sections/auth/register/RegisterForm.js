@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { Controller, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, IconButton, InputAdornment } from '@mui/material';
+import { Stack, IconButton, InputAdornment, Snackbar, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import PhoneInput from 'react-phone-input-2';
 
 import 'yup-phone';
@@ -26,11 +26,13 @@ const auth = getAuth(fireBaseInit);
 
 // ----------------------------------------------------------------------
 
-
 export default function RegisterForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [openAPIToast, setOpenAPIToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [severity, setSeverity] = useState('success');
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
@@ -45,7 +47,7 @@ export default function RegisterForm() {
     lastName: '',
     email: '',
     password: '',
-    phone: ''
+    phone: '',
   };
 
   const methods = useForm({
@@ -56,30 +58,47 @@ export default function RegisterForm() {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    setError,
+    clearErrors,
   } = methods;
 
   const onSubmit = async (data) => {
-    console.log({ data });
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(async (userCredential) => {
-        // console.log({ user: userCredential.user });
+        clearErrors('email');
+
+        console.log({ userCredential });
+
+        setSeverity('success');
+        setOpenAPIToast(true);
+        setToastMessage('User registered!');
+        localStorage.setItem('userEmail', data.email);
 
         const usersTable = collection(db, 'users');
-        const snapshot = await addDoc(usersTable, {
+        // User creation
+        await addDoc(usersTable, {
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone,
-          email: data.email
-        })
-        console.log(snapshot.docs[0].data())
+          email: data.email,
+        });
 
-        console.log('database')
-
+        signInWithEmailAndPassword(auth, data.email, data.password)
+          .then(async (/* userCredential */) => {
+            navigate('/dashboard/search');
+          })
+          .catch((error) => {
+            console.error("error>>>", error);
+          });
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        console.error('error>>>>', error);
+        setError('email', { type: 'custom', message: 'Email already exists' });
       });
+  };
+
+  const handleAPIToastClose = () => {
+    setOpenAPIToast(false);
   };
 
   return (
@@ -89,7 +108,6 @@ export default function RegisterForm() {
           <RHFTextField name="firstName" label="First name" />
           <RHFTextField name="lastName" label="Last name" />
         </Stack>
-        {/* <RHFTextField name="phone" type="tel" label="Phone number" /> */}
         <PhoneInputField name="phone" type="tel" label="Phone number" />
         <RHFTextField name="email" label="Email address" />
 
@@ -112,6 +130,20 @@ export default function RegisterForm() {
           Register
         </LoadingButton>
       </Stack>
+
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={openAPIToast}
+        autoHideDuration={6000}
+        onClose={handleAPIToastClose}
+      >
+        <Alert onClose={handleAPIToastClose} severity={severity} sx={{ width: '100%' }}>
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </FormProvider>
   );
 }
