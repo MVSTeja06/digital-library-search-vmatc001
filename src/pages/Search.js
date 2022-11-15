@@ -51,7 +51,7 @@ export const _getText = (text, filterName) => (filterName ? _getTextWithHighligh
 
 export const _getTextWithHighlights = (text, searchText) => {
   const regex1 = new RegExp(searchText, 'gi');
-  let newText = text.replace(regex1, `<mark class="highlight">$&</mark>`);
+  let newText = text?.replace(regex1, `<mark class="highlight">$&</mark>`);
 
   newText = doStringFormatting(newText)
   
@@ -60,8 +60,6 @@ export const _getTextWithHighlights = (text, searchText) => {
 
 export default function Search() {
   const [page, setPage] = useState(0);
-
-  const [selected, setSelected] = useState([]);
 
   const [library, setLibrary] = useState([]);
 
@@ -83,7 +81,7 @@ export default function Search() {
     try {
       const result = await axios.get(`http://localhost:3001/api/search?search=${searchVal}`);
       console.log({ result });
-      setLibrary(result?.data);
+      setLibrary(result?.data.results);
     } catch (error) {
       console.error({ error });
     }
@@ -117,8 +115,7 @@ export default function Search() {
 
   console.log({ displayETD });
   return (
-    <Page title="User">
-      <Container sx={{ padding: '0 !important' }}>
+      <Container maxWidth="xl" sx={{ margin: 0 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Search for Electronic Thesis And Disertation (ETDs)
@@ -209,7 +206,7 @@ export default function Search() {
           </Scrollbar>
 
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[25, 50, 75]}
             component="div"
             count={library.length}
             rowsPerPage={rowsPerPage}
@@ -221,7 +218,6 @@ export default function Search() {
 
         <SearchResultPage open={open} handleClose={handleClose} displayETD={displayETD} />
       </Container>
-    </Page>
   );
 }
 

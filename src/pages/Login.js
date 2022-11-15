@@ -1,20 +1,24 @@
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Card, Link, Container, Typography } from '@mui/material';
+import { Card, Link, Container, Typography, Dialog, DialogTitle, DialogContent, Button } from '@mui/material';
 // hooks
+import { useState } from 'react';
+import { Box } from '@mui/system';
 import useResponsive from '../hooks/useResponsive';
 // components
 import Page from '../components/Page';
 import Logo from '../components/Logo';
 // sections
 import { LoginForm } from '../sections/auth/login';
+import Search from './Search';
 
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
@@ -25,18 +29,18 @@ const HeaderStyle = styled('header')(({ theme }) => ({
   width: '100%',
   display: 'flex',
   alignItems: 'center',
-  position: 'absolute',
+  // position: 'absolute',
   padding: theme.spacing(3),
   justifyContent: 'end',
   [theme.breakpoints.up('md')]: {
-    alignItems: 'flex-start',
-    padding: theme.spacing(7, 5, 0, 7),
+    padding: theme.spacing(2, 5, 0, 7),
   },
 }));
 
 const SectionStyle = styled(Card)(({ theme }) => ({
   width: '100%',
   maxWidth: 464,
+  height: '50vh',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -46,7 +50,6 @@ const SectionStyle = styled(Card)(({ theme }) => ({
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: 480,
   margin: 'auto',
-  minHeight: '100vh',
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'column',
@@ -60,14 +63,24 @@ export default function Login() {
 
   const mdUp = useResponsive('up', 'md');
 
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
     <Page title="Login">
       <RootStyle>
         <HeaderStyle>
           {/* <Logo /> */}
+          <Button onClick={handleClickOpen}>Login</Button>
 
           {smUp && (
-            <Typography variant="body2" sx={{ mt: { md: -2 } }}>
+            <Typography variant="body2">
               Don’t have an account? {''}
               <Link variant="subtitle2" component={RouterLink} to="/register">
                 Get started
@@ -76,18 +89,32 @@ export default function Login() {
           )}
         </HeaderStyle>
 
-        {mdUp && (
-          <SectionStyle>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome Back
+        <Box sx={{ display: 'flex',  }}>
+          {mdUp && (
+            <Box>
+              <SectionStyle>
+                <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
+                  Hi, Welcome Back
+                </Typography>
+                <img src="/static/illustrations/welcome-back.png" alt="login" />
+              </SectionStyle>
+            </Box>
+          )}
+          <Box sx={{ mt: 3, width: '100%', ml: 3 }}>
+            <Search />
+          </Box>
+        </Box>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>
+            <Typography variant="h4" gutterBottom>
+              Sign in to Digital library with Wiki Cards
             </Typography>
-            <img src="/static/illustrations/welcome-back.png" alt="login" />
-          </SectionStyle>
-        )}
+          </DialogTitle>
 
-        <Container maxWidth="sm">
-          <SignInSection smUp={smUp} />
-        </Container>
+          <DialogContent>
+            <SignInSection smUp={smUp} />
+          </DialogContent>
+        </Dialog>
       </RootStyle>
     </Page>
   );
@@ -95,11 +122,11 @@ export default function Login() {
 
 const SignInSection = ({ smUp }) => (
   <ContentStyle>
-    <Typography variant="h4" gutterBottom>
+    {/* <Typography variant="h4" gutterBottom>
       Sign in to Digital library with Wiki Cards
-    </Typography>
+    </Typography> */}
 
-    <Typography sx={{ color: 'text.secondary', mb: 5 }}>Enter your login details below.</Typography>
+    <Typography sx={{ color: 'text.secondary', mb: 2 }}>Enter your login details below.</Typography>
 
     <LoginForm />
 

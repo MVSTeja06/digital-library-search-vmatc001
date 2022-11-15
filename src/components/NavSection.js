@@ -91,7 +91,9 @@ function NavItem({ item, active }) {
                     ...(isActiveSub && activeSubStyle),
                   }}
                 >
-                  <ListItemIconStyle>
+                  <ListItemIconStyle sx={{
+                    minWidth: "42px"
+                  }}>
                     <Box
                       component="span"
                       sx={{

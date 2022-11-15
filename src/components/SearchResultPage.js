@@ -18,7 +18,7 @@ import Iconify from './Iconify';
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
 export default function SearchResultPage({ open, handleClose, displayETD }) {
-  const { author, title, text, university, year, pdf, etd_file_id: fileID } = displayETD;
+  const { author, title, text, university, year, pdf, etd_file_id: fileID, abstract } = displayETD;
   return (
     <div>
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
@@ -89,7 +89,7 @@ export default function SearchResultPage({ open, handleClose, displayETD }) {
           <ListItem>
             <ListItemText
               primary="Abstract"
-              secondary={doStringFormatting(text)}
+              secondary={doStringFormatting(text || abstract)}
               primaryTypographyProps={{
                 variant: 'subtitle1',
               }}
