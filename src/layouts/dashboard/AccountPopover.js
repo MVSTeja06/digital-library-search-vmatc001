@@ -55,6 +55,7 @@ export default function AccountPopover() {
       localStorage.clear()
       await signOut(auth);
       handleClose();
+      localStorage.setItem('isLoggedIn', false);
       navigate('/login');
       console.log('logged out>>>');
     } catch (error) {

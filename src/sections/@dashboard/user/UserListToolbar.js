@@ -52,7 +52,6 @@ export default function UserListToolbar({ filterName, onFilterName, handleSearch
     setOpen(false);
   };
 
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const [showApiKey, setShowApiKey] = useState(true);
 
@@ -63,6 +62,10 @@ export default function UserListToolbar({ filterName, onFilterName, handleSearch
     localStorage.setItem('uuidv4', uuidv4Val);
     setUuidValue(uuidv4Val);
   }, []);
+  
+  const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn'));
+
+  console.log({ isLoggedIn }, typeof isLoggedIn)
   return (
     <>
       <RootStyle>

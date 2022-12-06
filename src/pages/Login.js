@@ -65,6 +65,8 @@ export default function Login() {
 
   const [open, setOpen] = useState(false);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -89,7 +91,7 @@ export default function Login() {
           )}
         </HeaderStyle>
 
-        <Box sx={{ display: 'flex',  }}>
+        <Box sx={{ display: 'flex' }}>
           {mdUp && (
             <Box>
               <SectionStyle>
@@ -101,7 +103,7 @@ export default function Login() {
             </Box>
           )}
           <Box sx={{ mt: 3, width: '100%', ml: 3 }}>
-            <Search />
+            <Search isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
           </Box>
         </Box>
         <Dialog open={open} onClose={handleClose}>
@@ -112,7 +114,7 @@ export default function Login() {
           </DialogTitle>
 
           <DialogContent>
-            <SignInSection smUp={smUp} />
+            <SignInSection smUp={smUp} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
           </DialogContent>
         </Dialog>
       </RootStyle>
@@ -120,7 +122,7 @@ export default function Login() {
   );
 }
 
-const SignInSection = ({ smUp }) => (
+const SignInSection = ({ smUp, isLoggedIn, setIsLoggedIn }) => (
   <ContentStyle>
     {/* <Typography variant="h4" gutterBottom>
       Sign in to Digital library with Wiki Cards
@@ -128,7 +130,7 @@ const SignInSection = ({ smUp }) => (
 
     <Typography sx={{ color: 'text.secondary', mb: 2 }}>Enter your login details below.</Typography>
 
-    <LoginForm />
+    <LoginForm isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
 
     {!smUp && (
       <Typography variant="body2" align="center" sx={{ mt: 3 }}>

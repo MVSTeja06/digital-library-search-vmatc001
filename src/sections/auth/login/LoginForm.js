@@ -29,7 +29,7 @@ import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hoo
 const auth = getAuth(fireBaseInit);
 const db = getFirestore(fireBaseInit);
 
-export default function LoginForm() {
+export default function LoginForm({ isLoggedIn , setIsLoggedIn }) {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -77,7 +77,9 @@ export default function LoginForm() {
           localStorage.setItem('userEmail', userCredential.user.email);
           localStorage.setItem('userPhone', result.docs[0].data().phone);
 
+          localStorage.setItem('isLoggedIn', true);
           handleSendOtp(result.docs[0]?.data()?.phone);
+          setIsLoggedIn(true);
         })
         .catch((error) => {
           console.log({ error: error.message });

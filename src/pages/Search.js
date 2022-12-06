@@ -75,7 +75,7 @@ export const _getTextWithHighlights = (text, searchText = '', keyword = []) => {
   return <span dangerouslySetInnerHTML={{ __html: newText }} />;
 };
 
-export default function Search() {
+export default function Search({ isLoggedIn , setIsLoggedIn }) {
   const [page, setPage] = useState(0);
 
   const [library, setLibrary] = useState([]);
@@ -175,6 +175,7 @@ export default function Search() {
           filterName={filterName}
           handleSearchPress={handleSearchPress}
           onFilterName={handleFilterByName}
+          isLoggedIn={isLoggedIn}
         />
         {searchPressed && count && count >= 1 ? (
           <>
