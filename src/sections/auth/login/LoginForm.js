@@ -4,6 +4,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 // @mui
 import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
@@ -65,22 +66,23 @@ export default function LoginForm() {
     if (!loginSuccess) {
       signInWithEmailAndPassword(auth, data.email, data.password)
         .then(async (userCredential) => {
-          
           // Signed in
           const usersTable = collection(db, 'users');
           // const snapshot = await getDocs(usersTable);
           const snapshot = await query(usersTable, where('email', '==', userCredential.user.email));
           const result = await getDocs(snapshot);
-          
+
+          console.log({ userCredential: userCredential.user });
+
           localStorage.setItem('userEmail', userCredential.user.email);
           localStorage.setItem('userPhone', result.docs[0].data().phone);
-        
+
           handleSendOtp(result.docs[0]?.data()?.phone);
         })
         .catch((error) => {
           console.log({ error: error.message });
           setLoginSuccess(false);
-          if(error.message !== "INVALID_PASSWORD"){
+          if (error.message !== 'INVALID_PASSWORD') {
             setError('email', { type: 'custom', message: 'email does not exist' });
           } else {
             setError('password', { type: 'custom', message: 'password is invalid' });
@@ -91,17 +93,17 @@ export default function LoginForm() {
     } else {
       clearErrors('otp');
 
-      window.confirmationResult.confirm(getValues('otp')).then((result) => {
-
-        navigate('/dashboard/search', { replace: true });
-
-      }).catch((error)=>{
-
-        console.log({error});
-        if(error.code?.includes("auth/invalid-verification-code")){
-          setError('otp', { type: 'custom', message: 'Invalid OTP provided' });
-        }
-      });
+      window.confirmationResult
+        .confirm(getValues('otp'))
+        .then((result) => {
+          navigate('/dashboard/search', { replace: true });
+        })
+        .catch((error) => {
+          console.log({ error });
+          if (error.code?.includes('auth/invalid-verification-code')) {
+            setError('otp', { type: 'custom', message: 'Invalid OTP provided' });
+          }
+        });
     }
   };
 
@@ -116,7 +118,6 @@ export default function LoginForm() {
           window.confirmationResult = confirmationResult;
           console.log({ confirmationResult });
           setLoginSuccess(true);
-
         })
         .catch((error) => console.log(error));
     }
@@ -135,7 +136,17 @@ export default function LoginForm() {
     );
   }, []);
 
-  console.log({ isSubmitting })
+  const [loginBtndisabled, setLoginBtndisabled] = useState(true);
+
+  const handleCaptchaChange = (token) => {
+    setLoginBtndisabled(false);
+  };
+
+  const handleCaptchaExpiry = (token) => {
+    setLoginBtndisabled(true);
+  };
+
+  console.log({ isSubmitting });
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
@@ -157,6 +168,12 @@ export default function LoginForm() {
           }}
         />
 
+        <ReCAPTCHA
+          sitekey={process.env.REACT_APP_SITE_KEY}
+          onChange={handleCaptchaChange}
+          onExpired={handleCaptchaExpiry}
+        />
+
         {loginSuccess && <RHFTextField name="otp" label="Enter OTP" />}
       </Stack>
 
@@ -167,7 +184,14 @@ export default function LoginForm() {
         </Link>
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+      <LoadingButton
+        fullWidth
+        size="large"
+        type="submit"
+        variant="contained"
+        loading={isSubmitting}
+        disabled={loginBtndisabled}
+      >
         {loginSuccess ? 'Login with OTP' : 'Login'}
       </LoadingButton>
     </FormProvider>

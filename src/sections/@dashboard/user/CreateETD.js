@@ -97,9 +97,6 @@ export default function CreateETD({ open, handleClose }) {
     resetField('file');
     setFileToUpload(null);
   };
-
-  console.log({ errors });
-
   return (
     <Dialog open={open} onClose={doHandleClose}>
       <DialogTitle>New ETD Entry</DialogTitle>

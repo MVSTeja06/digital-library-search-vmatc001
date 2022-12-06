@@ -9,6 +9,7 @@ import ThemeProvider from './theme';
 // components
 import ScrollToTop from './components/ScrollToTop';
 import { BaseOptionChartStyle } from './components/chart/BaseOptionChart';
+import Footer from './components/Footer';
 
 // ----------------------------------------------------------------------
 
@@ -19,6 +20,7 @@ export default function App() {
         <ScrollToTop />
         <BaseOptionChartStyle />
         <Router />
+        <Footer />
       </ThemeProvider>
     </LocalizationProvider>
   );
