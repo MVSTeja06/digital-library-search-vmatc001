@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import PropTypes from 'prop-types';
 // material
 import { styled } from '@mui/material/styles';
-import { Toolbar, OutlinedInput, InputAdornment, Button, TextField, Box, IconButton } from '@mui/material';
+import { Toolbar, OutlinedInput, InputAdornment, Button, TextField, Box, IconButton, Grid } from '@mui/material';
 // component
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,10 +15,10 @@ import CreateETD from './CreateETD';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Toolbar)(({ theme }) => ({
-  height: 96,
+  minHeight: 96,
   display: 'flex',
   justifyContent: 'space-between',
-  padding: theme.spacing(0, 1, 0, 3),
+  padding: theme.spacing(2, 1, 0),
 }));
 
 const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
@@ -52,7 +52,6 @@ export default function UserListToolbar({ filterName, onFilterName, handleSearch
     setOpen(false);
   };
 
-
   const [showApiKey, setShowApiKey] = useState(true);
 
   const [uuidValue, setUuidValue] = useState(true);
@@ -62,61 +61,70 @@ export default function UserListToolbar({ filterName, onFilterName, handleSearch
     localStorage.setItem('uuidv4', uuidv4Val);
     setUuidValue(uuidv4Val);
   }, []);
-  
+
   const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn'));
 
-  console.log({ isLoggedIn }, typeof isLoggedIn)
   return (
     <>
       <RootStyle>
-        <SearchStyle
-          value={filterName}
-          onChange={onFilterName}
-          placeholder="Search ETD..."
-          endAdornment={
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleSearchPress}>
-              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
-            </IconButton>
-          }
-        />
-
-        {isLoggedIn && (
-          <Box
-            sx={{
-              height: '50px',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <Button
-              size="small"
-              variant="outlined"
-              sx={{ marginRight: 5 }}
-              onClick={() => {
-                setShowApiKey(!showApiKey);
-              }}
-            >
-              Show API Key
-            </Button>
-            <TextField
-              size="small"
-              id="outlined-basic"
-              variant="outlined"
-              disabled={showApiKey}
-              value={showApiKey ? '' : uuidValue}
-              sx={{
-                minWidth: '400px'
-              }}
-              endAdornment
+        <Grid container sm={12}>
+          <Grid item md={12} lg={5}>
+            <SearchStyle
+              value={filterName}
+              onChange={onFilterName}
+              placeholder="Search ETD..."
+              endAdornment={
+                <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleSearchPress}>
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
+                </IconButton>
+              }
             />
-          </Box>
-        )}
-
-        {isLoggedIn && (
-          <Button variant="outlined" onClick={handleClickOpen}>
-            New ETD Entry
-          </Button>
-        )}
+          </Grid>
+          {isLoggedIn && (
+            <Grid
+              sx={{
+                height: '50px',
+                display: 'flex',
+                alignItems: 'center',
+                mt: 1,
+              }}
+              md={12}
+              lg={7}
+            >
+              <Grid container item md={8} sm={10} sx={{ justifyContent: 'flex-start' }}>
+                <Grid item xs={3} display="flex">
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      setShowApiKey(!showApiKey);
+                    }}
+                  >
+                    API Key
+                  </Button>
+                </Grid>
+                <Grid item xs={9} display="flex">
+                  <TextField
+                    size="small"
+                    id="outlined-basic"
+                    variant="outlined"
+                    disabled={showApiKey}
+                    value={showApiKey ? '' : uuidValue}
+                    sx={{
+                      minWidth: '200px',
+                      width: '100%',
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container item md={4} sm={2} display="flex" sx={{ mt: 1, ml: 1 }} justifyContent="flex-end">
+                <Button variant="outlined" onClick={handleClickOpen} size="medium">
+                  Create ETD
+                </Button>
+              </Grid>
+            </Grid>
+          )}
+        </Grid>
       </RootStyle>
       <CreateETD open={open} handleClose={handleClose} />
     </>

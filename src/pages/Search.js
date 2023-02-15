@@ -18,6 +18,7 @@ import {
   TableContainer,
   TablePagination,
   Link,
+  Grid,
 } from '@mui/material';
 // components
 
@@ -75,7 +76,7 @@ export const _getTextWithHighlights = (text, searchText = '', keyword = []) => {
   return <span dangerouslySetInnerHTML={{ __html: newText }} />;
 };
 
-export default function Search({ isLoggedIn , setIsLoggedIn }) {
+export default function Search({ isLoggedIn, setIsLoggedIn }) {
   const [page, setPage] = useState(0);
 
   const [library, setLibrary] = useState([]);
@@ -101,7 +102,6 @@ export default function Search({ isLoggedIn , setIsLoggedIn }) {
   };
 
   const makeSearchAPI = async (searchVal) => {
-
     const value = filterXSS(searchVal, {
       whiteList: {},
       stripIgnoreTag: true,
@@ -181,6 +181,7 @@ export default function Search({ isLoggedIn , setIsLoggedIn }) {
           <>
             <Box
               sx={{
+                mt: 1,
                 ml: 4,
                 fontSize: '18px',
                 fontStyle: 'italic',
@@ -210,7 +211,7 @@ export default function Search({ isLoggedIn , setIsLoggedIn }) {
           ''
         )}
         <Scrollbar>
-          <TableContainer sx={{ minWidth: 800 }}>
+          <TableContainer sx={{ minWidth: 800, mt: 1 }}>
             <Table>
               <TableBody>
                 {library.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
@@ -228,40 +229,42 @@ export default function Search({ isLoggedIn , setIsLoggedIn }) {
                               {_getText(title, filterName)}
                             </Typography>
                           </Link>
-                          <Box display="flex">
-                            <Typography variant="subtitle2" noWrap mr={2}>
-                              Author(s):
-                            </Typography>
-                            <Typography variant="body2" noWrap>
-                              {author}
-                            </Typography>
-                          </Box>
-                          <Box
-                            display="flex"
-                            sx={{
-                              marginTop: '0 !important',
-                            }}
-                          >
-                            <Typography variant="subtitle2" noWrap mr={2}>
-                              University:
-                            </Typography>
-                            <Typography variant="body2" noWrap>
-                              {university}
-                            </Typography>
-                          </Box>
-                          <Box
-                            display="flex"
-                            sx={{
-                              marginTop: '0 !important',
-                            }}
-                          >
-                            <Typography variant="subtitle2" noWrap mr={2}>
-                              Year:
-                            </Typography>
-                            <Typography variant="body2" noWrap>
-                              {year}
-                            </Typography>
-                          </Box>
+                          <Grid container display="flex" sm={12}>
+                            <Grid item display="flex" sm={12} md={1}>
+                              <Typography variant="subtitle2" noWrap mr={2}>
+                                Author(s):
+                              </Typography>
+                            </Grid>
+                            <Grid item display="flex" sm={12} md={11}>
+                              <Typography variant="body2" noWrap>
+                                {author}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Grid container display="flex" sm={12}>
+                            <Grid item display="flex" sm={12} md={1}>
+                              <Typography variant="subtitle2" noWrap mr={2}>
+                                University:
+                              </Typography>
+                            </Grid>
+                            <Grid item display="flex" sm={12} md={11}>
+                              <Typography variant="body2" noWrap>
+                                {university}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Grid container display="flex" sm={12}>
+                            <Grid item display="flex" sm={12} md={1}>
+                              <Typography variant="subtitle2" noWrap mr={2}>
+                                Year:
+                              </Typography>
+                            </Grid>
+                            <Grid item display="flex" sm={12} md={11}>
+                              <Typography variant="body2" noWrap>
+                                {year}
+                              </Typography>
+                            </Grid>
+                          </Grid>
 
                           <AbstractSection filterName={filterName} text={text} />
                         </Stack>
@@ -313,13 +316,20 @@ const AbstractSection = ({ text, filterName }) => {
   };
 
   return (
-    <>
-      <Typography variant="body2" flexWrap sx={fullAbstract ? {} : textStyle}>
-        {_getText(text, filterName)}
-      </Typography>
-      <Link underline="hover" onClick={showMore} sx={{ cursor: 'pointer' }}>
-        {fullAbstract ? 'Show less' : 'Show more'}
-      </Link>
-    </>
+    <Grid container display="flex" sm={12}>
+      <Grid item display="flex" sm={12} md={1}>
+        <Typography variant="subtitle2" noWrap mr={2}>
+          Abstract:
+        </Typography>
+      </Grid>
+      <Grid item display="flex" flexDirection="column" sm={12} md={11}>
+        <Typography variant="body2" flexWrap sx={fullAbstract ? {} : textStyle}>
+          {_getText(text, filterName)}
+        </Typography>
+        <Link underline="hover" onClick={showMore} sx={{ cursor: 'pointer' }}>
+          {fullAbstract ? 'Show less' : 'Show more'}
+        </Link>
+      </Grid>
+    </Grid>
   );
 };
