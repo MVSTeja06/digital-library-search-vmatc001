@@ -55,7 +55,7 @@ CSVToJSON()
           const json = {
             ...item,
             wikifier_terms: filteredAnnotations,
-            pdf: `https://storage.cloud.google.com/digital-wiki-tmatcha.appspot.com/${item?.etd_file_id}.pdf`,
+            pdf: `https://storage.cloud.google.com/gcf-sources-1009458981341-us-central1/${item?.etd_file_id}.pdf`,
           };
 
           results.push(json);

@@ -16,7 +16,7 @@ fs.readFile("./src/output.json", "utf8", async (err, jsonString) => {
     try {
       let esConfig = {
         method: "post",
-        url: `http://localhost:9200/digi_wiki/_doc/${item?.etd_file_id}`,
+        url: `http://localhost:9200/digital_library/_doc/${item?.etd_file_id}`,
         headers: {
           "Content-Type": "application/json",
         },

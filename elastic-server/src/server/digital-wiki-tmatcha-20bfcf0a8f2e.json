@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "digital-wiki-tmatcha",
+  "private_key_id": "20bfcf0a8f2e516acfa79dd260cb4cc2a4751454",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDB3S3WeqV0VibI\nes5Xqk+CwTndnmtdrzbmTdst6u0qKkVFcEC2vQYO43q83GHkTPFJ2zacYUrFs26t\n2whaj+mc2aniLhMtxh2BFRxk0TIE6YZQqj54AJ69H2FHDErh4LtRAQVwd1zn3QYM\niprOSo+1eD18p8pD9Y1eAvNVD+qKRw8MGbK3oPypUtAzIE6/Y7sk1T5TlNIKPLZe\nbv9+6vzJP1Qb3w6/n4MU3Zd1hpb6NHAqEpjewxohi2ndy8UOtZgzKcIDGXPi5Jsk\nwKcKyrMcnOs1eX/HeJGTOWIMV/SKlojb0Uml+CSw9LGM10zrytz6udMwHQsuMI7q\n3Y8GgJcnAgMBAAECggEABdz2ZN0huJunRjHu6YX54utDjkJkXnTofhQzbyUnQ8z7\nnus3+vgCHK672uqJYxoCDU2QTlSaqhp07ma2GC6CMwP+hfdPe1LZgXFpOMjHwtlF\nfnHEPFMFnpQ6KkxHYFowjdDUu+z187c+DWCe6GMCeTkMqUv6q2lb+4dmB5frIxJr\nbcTRTyI+AUKlOzK5XBvZPK4d6H7PTo7EWEPq2CMnMHhsNLPI+AQVteZmMsBnnOhJ\n9TSg7pyK8XqzVFy2AiJ60aYeCZ4nqvj/W1jLADy/AYjGgfw+khhvcTmoBGEbeSKj\nGHRPjrU9dSECLkVWFEG6Ogsw0TMHBgYz4uUbLwUqeQKBgQDzFsgfAvTQRUbtS+Oo\nJEiPERS/WuIRZF1F+/16dJGwL6uFUYIq2JwhfM3oMcMB7AN23B76PoFYeh7obVAi\nrkqNRI7JqZOE1uUGwNroAPS0dVnoaWc30AZjXLl+xQVkFgYQr8mAloP0cr1xvcfa\nZUNfhSQkoR5Mt16V+hQKcPxmWQKBgQDMKRj6MuF6rbYngZrO/56OB8lslGXDW+Iu\nr2f1A1/onaZbJoJHHLCW6RM+Ar9WaRW/iOaojKMpfBwXuZAFYwVyl53XxYU21Tkr\nTbWGhMyUt4uhC97XZggxQ6bVoSBgulULo9PAcPdrSPop6trRBSW4QXPXj9rM1LUI\nv/KzKoA5fwKBgHSnaB3Js2YG+MSDeJqF3vQZBFXX7UjfWwtso/WR3yAnoC34MXkS\nPcqsM7vLtYNEmVz+wTbhq/yjjhWH777U2R312nfYEtzaq0mUXvibDNNUxXKMsmXM\nRGSGaNX3AmFHWF3FnfNBR82VCmh85F1f3vcF05RoZTv3e0KJofhoxBbxAoGBAIRq\n54toMv0J7IqFMm6uNx2yCUAGpFZoozRaipfNH4jVr8+RE5CiGBtZgySGTanzMKrx\nVYHe7fj7SZFNxw7nYeIoWrVXpIajF5hxp5pfSf3van4DH/8fa5LgaTZIcqKqWHzb\nPn2kB6YrSC6l6FUH/KYctdELugN+twi8zuLMXyxrAoGBAOwOOIPnS5uXImg1ivHC\nLBpt0TwrBRtS/IhIxdPUXdFE9jB7PTsmSCHia+yOBCHMKVGMoR7Xq+M1qxoXVF9D\nGf/Ac6wI32ihFaNdyOgn7llboa2z7M1HlWNGo/519xVhQ0uXx5LkeFgIl3bSW78k\n3Nk3i23Rd4QymPQPGVr2TJ8z\n-----END PRIVATE KEY-----\n",
+  "client_email": "digital-wiki-tmatcha@appspot.gserviceaccount.com",
+  "client_id": "108930671862897956789",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/digital-wiki-tmatcha%40appspot.gserviceaccount.com"
+}
